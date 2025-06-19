@@ -1,7 +1,7 @@
 
 from .constantes import *
 
-def cargar_ranking(): # Antes era leer_archivos
+def cargar_ranking(): 
     """
     Carga el ranking desde el archivo de texto especificado por ARCHIVO_RANKING.
     Cada línea del archivo debe ser "Nombre,Puntuacion".
@@ -27,7 +27,7 @@ def cargar_ranking(): # Antes era leer_archivos
     return ranking
 
 
-def guardar_ranking(ranking_a_guardar): # Antes era guardar_ranking, pero recibe la lista completa
+def guardar_ranking(ranking_a_guardar): 
     """
     Guarda el ranking completo (una lista de tuplas) en el archivo de texto
     especificado por ARCHIVO_RANKING.
@@ -51,7 +51,7 @@ def mostrar_ranking(ranking):
 
     print("Nombre         | Movimientos")
     print("---------------|-------------")
-    # Itera directamente sobre la lista 'ranking' sin ordenarla
+    # Itera directamente sobre la lista 'ranking'
     for nombre, puntuacion in ranking:
         print(f"{nombre:<14} | {puntuacion:<11}")
     input("\nPresiona Enter para volver al menú principal...")

@@ -1,6 +1,4 @@
-
 from .constantes import *
-
 def cargar_ranking(): 
     """
     Carga el ranking desde el archivo de texto especificado por ARCHIVO_RANKING.
@@ -27,18 +25,29 @@ def cargar_ranking():
     return ranking
 
 
-def guardar_ranking(ranking_a_guardar): 
-    """
-    Guarda el ranking completo (una lista de tuplas) en el archivo de texto
-    especificado por ARCHIVO_RANKING.
-    El formato de cada línea será "Nombre,Puntuacion".
+# def guardar_ranking(ranking_a_guardar): 
+#     """
+#     Guarda el ranking completo (una lista de tuplas) en el archivo de texto
+#     especificado por ARCHIVO_RANKING.
+#     El formato de cada línea será "Nombre,Puntuacion".
 
-    """
+#     """
     
-    with open(ARCHIVO_RANKING, "w", encoding="utf-8") as archivos:
-        for nombre, puntuacion in ranking_a_guardar: # Iterar sobre la lista de tuplas
-            linea = f"{nombre},{puntuacion}\n" # Formatea la línea
-            archivos.write(linea)
+#     with open(ARCHIVO_RANKING, "w", encoding="utf-8") as archivos:
+#         for nombre, puntuacion in ranking_a_guardar: # Iterar sobre la lista de tuplas
+#             linea = f"{nombre},{puntuacion}\n" # Formatea la línea
+#             archivos.write(linea)
+def guardar_ranking(nombre, puntaje):
+    """
+    Guarda el nombre y puntaje del jugador en un archivo de texto.
+
+    Args:
+        nombre (str): Nombre del jugador.
+        puntaje (int): Puntaje obtenido.
+    """
+    with open(ARCHIVO_RANKING, "a", encoding="utf-8") as archivo:
+        archivo.write(f"{nombre},{puntaje}\n")
+
 
 
 def mostrar_ranking(ranking):

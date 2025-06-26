@@ -1,5 +1,6 @@
 from paquete.complementarias import *
-from paquete.funciones import *
+from paquete.funciones_cartas import *
+from paquete.funciones_ranking import *
 import sys
 def main():
     """
@@ -20,9 +21,7 @@ def main():
             # Dentro de la funcion juego_solitario, cuando alguien gana:
             movimientos = 10 #harcodeado 
             nombre_jugador = input("Ingresa tu nombre para el ranking: ").strip()
-            ranking_actual = cargar_ranking() # Carga la lista de tuplas
-            ranking_actual.append((nombre_jugador, movimientos)) # Añade la nueva tupla
-            guardar_ranking(ranking_actual) # Guarda la lista de tuplas completa
+            guardar_ranking(nombre_jugador, movimientos) 
 
         elif opcion == 2:
             ranking_actual = cargar_ranking() 

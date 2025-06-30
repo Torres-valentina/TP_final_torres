@@ -1,6 +1,6 @@
 def obtener_entrada_entero(prompt, min_val, max_val):
     """
-    Solicita al usuario una entrada numérica y la valida sin usar try-except.
+    Solicita al usuario una entrada numérica y la valida
     Asegura que la entrada sea un dígito y esté dentro de un rango específico.
     """
     while True:

@@ -24,19 +24,6 @@ def cargar_ranking():
                 print(f"Línea con formato incorrecto en ranking: '{linea}'. Se omite.")
     return ranking
 
-
-# def guardar_ranking(ranking_a_guardar): 
-#     """
-#     Guarda el ranking completo (una lista de tuplas) en el archivo de texto
-#     especificado por ARCHIVO_RANKING.
-#     El formato de cada línea será "Nombre,Puntuacion".
-
-#     """
-    
-#     with open(ARCHIVO_RANKING, "w", encoding="utf-8") as archivos:
-#         for nombre, puntuacion in ranking_a_guardar: # Iterar sobre la lista de tuplas
-#             linea = f"{nombre},{puntuacion}\n" # Formatea la línea
-#             archivos.write(linea)
 def guardar_ranking(nombre, puntaje):
     """
     Guarda el nombre y puntaje del jugador en un archivo de texto.
@@ -49,18 +36,11 @@ def guardar_ranking(nombre, puntaje):
         archivo.write(f"{nombre},{puntaje}\n")
 
 
-
-def mostrar_ranking(ranking):
-    """Muestra el ranking en la consola."""
-    print("\n--- RANKING DE SOLITARIO ---")
+def obtener_estado_ranking():
+    ranking = cargar_ranking()
     if not ranking:
-        print("El ranking está vacío. ¡Sé el primero en jugar y ganar!")
-        input("\nPresiona Enter para volver al menú principal...")
-        return
-
-    print("Nombre         | Movimientos")
-    print("---------------|-------------")
-    # Itera directamente sobre la lista 'ranking'
-    for nombre, puntuacion in ranking:
-        print(f"{nombre:<14} | {puntuacion:<11}")
-    input("\nPresiona Enter para volver al menú principal...")
+        return ["El ranking está vacío. ¡Sé el primero en jugar y ganar!"]
+    estado = ["Nombre         | Movimientos", "---------------|-------------"]
+    for nombre, puntos in ranking:
+        estado.append(f"{nombre:<14} | {puntos:<11}")
+    return estado

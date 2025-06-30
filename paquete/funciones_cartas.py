@@ -58,32 +58,23 @@ def repartir_cartas(baraja):
     mazo_reserva = baraja[indice:]  # lo que quedó sin repartir
     return pilas, mazo_reserva
 
-def mostrar_juego(pilas, mazo_reserva):
+def siguiente_carta(mazo, indice):
     """
-    Muestra por consola el estado actual del juego:
-    - Cada una de las 7 pilas con cartas ocultas y visibles.
-    - Cantidad de cartas restantes en el mazo de reserva.
+    Devuelve la siguiente carta visible del mazo.
 
     Args:
-        pilas (list): Lista de 7 tuplas (ocultas, visible).
-        mazo_reserva (list): Lista de cartas no repartidas (mazo).
+        mazo (list): Lista de cartas en el mazo.
+        indice (int): Índice actual.
+
+    Returns:
+        tuple: (carta actual o None, nuevo índice)
     """
-    print("\nEstado del juego:")
-    for i, (ocultas, visible) in enumerate(pilas):
-        ocultas_str = "*" * len(ocultas)
-        visible_str = f"({visible[0]} de {visible[1]})"
-        print(f"Pila {i+1}: {ocultas_str} {visible_str}")
+    if indice < len(mazo):
+        carta_mas_indice = mazo[indice], indice + 1
+    else:
+        carta_mas_indice = None, 0  # si termina el mazo, reinicia
 
-    print(f"\nMazo de reserva: {len(mazo_reserva)} cartas")
-
+    return carta_mas_indice
 
 
 
-
-
-
-# baraja = crear_baraja()
-# barajada = barajar_baraja(baraja)
-# pilas, mazo = repartir_cartas(barajada)
-
-# mostrar_juego(pilas, mazo)

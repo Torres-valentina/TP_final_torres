@@ -37,6 +37,9 @@ def guardar_ranking(nombre, puntaje):
 
 
 def obtener_estado_ranking():
+    """
+    Devuelve una lista de líneas formateadas para mostrar el ranking en pantalla.
+    """
     ranking = cargar_ranking()
     if not ranking:
         return ["El ranking está vacío. ¡Sé el primero en jugar y ganar!"]

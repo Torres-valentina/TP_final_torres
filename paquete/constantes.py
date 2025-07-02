@@ -1,5 +1,5 @@
 ARCHIVO_RANKING = "archivos/ranking.txt"
-VALORES = list(range(1, 8)) + [10, 11, 12]
+VALORES = list(range(1, 11))
 PALOS = ['oros', 'copas', 'espadas', 'bastos']
 # === COLORES Y FUENTE ===
 BLANCO = (255, 255, 255)

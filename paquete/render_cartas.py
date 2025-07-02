@@ -65,12 +65,11 @@ def dibujar_pilas_con_imagenes(pantalla, pilas, carta_mazo=None, fundaciones=Non
     Args:
         pantalla (pygame.Surface): La superficie de la pantalla de Pygame.
         pilas (list): Una lista de tuplas, donde cada tupla contiene
-                      (cartas_ocultas, carta_visible) para cada pila.
+                      (cartas_ocultas, cartas_visibles) para cada pila.
         carta_mazo (tuple, optional): La carta superior del mazo. Si es None,
-                                      se dibuja el reverso del mazo. Por defecto es None.
-        fundaciones (list, optional): Una lista de listas que representan las fundaciones.
-                                       Si es None, se inicializa como cuatro listas vacías.
-                                       Por defecto es None.
+                                      se dibuja el reverso del mazo.
+        fundaciones (list, optional): Lista de listas que representan las fundaciones.
+                                      Si es None, se inicializa como cuatro listas vacías.
     """
     pantalla.fill(VERDE)
 
@@ -79,7 +78,7 @@ def dibujar_pilas_con_imagenes(pantalla, pilas, carta_mazo=None, fundaciones=Non
 
     dibujar_fundaciones(pantalla, fundaciones)
 
-    for i, (ocultas, visible) in enumerate(pilas):
+    for i, (ocultas, visibles) in enumerate(pilas):
         x = ORIGEN_X + i * ESPACIADO_X
         y = ORIGEN_Y
 
@@ -87,10 +86,11 @@ def dibujar_pilas_con_imagenes(pantalla, pilas, carta_mazo=None, fundaciones=Non
             pantalla.blit(REVERSO, (x, y))
             y += ESPACIADO_Y
 
-        if visible:
-            valor, palo = visible
+        for carta in visibles:
+            valor, palo = carta
             imagen = cargar_imagen(valor, palo)
             pantalla.blit(imagen, (x, y))
+            y += ESPACIADO_Y
 
     if carta_mazo:
         valor, palo = carta_mazo
@@ -98,3 +98,4 @@ def dibujar_pilas_con_imagenes(pantalla, pilas, carta_mazo=None, fundaciones=Non
         pantalla.blit(imagen, (50, 20))
     else:
         pantalla.blit(REVERSO, (50, 20))
+

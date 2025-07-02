@@ -92,6 +92,10 @@ def dibujar_pilas_con_imagenes(pantalla, pilas, carta_mazo=None, fundaciones=Non
             pantalla.blit(imagen, (x, y))
             y += ESPACIADO_Y
 
+        if not ocultas and not visibles:
+            # Dibujá un rectángulo gris para representar la pila vacía
+                pygame.draw.rect(pantalla, (100, 100, 100), (x, y, 80, 120), 2)
+
     if carta_mazo:
         valor, palo = carta_mazo
         imagen = cargar_imagen(valor, palo)

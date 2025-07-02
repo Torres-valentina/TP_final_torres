@@ -3,3 +3,4 @@ luis,10
 lala,10
 tomas,10
 martina,10
+maria,70

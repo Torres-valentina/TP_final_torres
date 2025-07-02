@@ -29,6 +29,14 @@ icono_actual = icono_sonido
 boton_sonido_rect = icono_sonido.get_rect(topright=(ANCHO - 10, 10))
 
 musica_activada = True
+#----------------------BOTON VOLVER----------------------------------
+imagen_boton_volver = pygame.image.load("imagenes/volver.png")
+imagen_boton_volver = pygame.transform.scale(imagen_boton_volver, (80, 80))
+BOTON_VOLVER_RECT = imagen_boton_volver.get_rect(topleft=(10, ALTO - 80))
+
+#----------------------BOTON SIGUIENTE------------------------------------
+imagen_boton_siguiente = pygame.image.load("imagenes/siguiente.png")
+imagen_boton_siguiente = pygame.transform.scale(imagen_boton_siguiente, (80, 80))
 
 # ---------- ÁREAS INTERACTIVAS ----------
 MAZO_RECT = pygame.Rect(50, 20, 80, 120)
@@ -75,10 +83,12 @@ def mostrar_textos(lista_textos):
         linea = fuente.render(texto, True, BLANCO)
         pantalla.blit(linea, (50, y))
         y += 30
+    pantalla.blit(imagen_boton_volver, BOTON_VOLVER_RECT)
+
 
 def mostrar_mensaje_ganaste_y_guardar_ranking(movimientos):
     pantalla.fill(NEGRO)
-    texto = fuente.render("¡Ganaste! 🎉", True, BLANCO)
+    texto = fuente.render("¡Ganaste!", True, BLANCO)
     pantalla.blit(texto, (ANCHO // 2 - texto.get_width() // 2, ALTO // 2 - 40))
     texto2 = fuente.render(f"Movimientos: {movimientos}", True, BLANCO)
     pantalla.blit(texto2, (ANCHO // 2 - texto2.get_width() // 2, ALTO // 2))
@@ -123,22 +133,72 @@ def loop_menu():
                     pygame.display.flip()
                 elif botones["ranking"].collidepoint(evento.pos):
                     textos = obtener_estado_ranking()
-                    mostrar_textos(textos)
+
+                    mostrando_ranking = True
+                    while mostrando_ranking:
+                        for evento_ranking in pygame.event.get():
+                            if evento_ranking.type == pygame.QUIT:
+                                pygame.quit()
+                                sys.exit()
+                            elif evento_ranking.type == pygame.MOUSEBUTTONDOWN:
+                                if BOTON_VOLVER_RECT.collidepoint(evento_ranking.pos):
+                                    mostrando_ranking = False
+
+                        pantalla.fill(NEGRO)  # Redibujar fondo para que se vea todo
+                        mostrar_textos(textos)  # Mostrar el ranking
+                        pantalla.blit(imagen_boton_volver, BOTON_VOLVER_RECT)  # Mostrar botón volver
+                        pygame.display.flip()
+
+                    botones = mostrar_menu()
                     pygame.display.flip()
+
                 elif botones["salir"].collidepoint(evento.pos):
                     pygame.quit()
                     sys.exit()
 
+def mover_grupo_de_pila_a_pila(pilas, origen_idx, carta_idx, destino_idx):
+    ocultas_origen, visibles_origen = pilas[origen_idx]
+    cartas_a_mover = visibles_origen[carta_idx:]
+
+    if not cartas_a_mover:
+        return False
+
+    valor_mover, palo_mover = cartas_a_mover[0]
+    ocultas_destino, visibles_destino = pilas[destino_idx]
+
+    if not visibles_destino:
+        if valor_mover != 10:
+            return False
+        else:
+            pilas[destino_idx] = (ocultas_destino, visibles_destino + cartas_a_mover)
+            pilas[origen_idx] = (ocultas_origen, visibles_origen[:carta_idx])
+    else:
+        valor_tope, palo_tope = visibles_destino[-1]
+
+        if valor_mover == valor_tope - 1 and palo_mover != palo_tope:
+            pilas[destino_idx] = (ocultas_destino, visibles_destino + cartas_a_mover)
+            pilas[origen_idx] = (ocultas_origen, visibles_origen[:carta_idx])
+        else:
+            return False
+
+    if not pilas[origen_idx][1] and pilas[origen_idx][0]:
+        nueva_visible = pilas[origen_idx][0].pop()
+        pilas[origen_idx] = (pilas[origen_idx][0], [nueva_visible])
+
+    return True
+
 def loop_juego():
-    global icono_actual  # para el botón de sonido
-    baraja = barajar_baraja(crear_baraja())
+    global icono_actual
+    baraja = barajar_baraja(crear_baraja(PALOS, VALORES))
     pilas, mazo = repartir_cartas(baraja)
     fundaciones = [[], [], [], []]
     indice_mazo = 0
     carta_visible = None
     carta_seleccionada = None
+    seleccion_visible = None
     movimientos = 0
     corriendo = True
+    BOTON_SIGUIENTE_RECT = pygame.Rect(150, 50, 80, 40)  # Ajustá posición/tamaño a gusto
 
     while corriendo:
         # Actualizar carta visible del mazo
@@ -150,12 +210,21 @@ def loop_juego():
         else:
             carta_visible = mazo[indice_mazo]
 
-        # Dibujar todo
+        # DIBUJAR
         dibujar_pilas_con_imagenes(pantalla, pilas, carta_visible, fundaciones)
         pantalla.blit(icono_actual, boton_sonido_rect)
+        pantalla.blit(imagen_boton_siguiente, BOTON_SIGUIENTE_RECT)
+        pantalla.blit(imagen_boton_volver, BOTON_VOLVER_RECT)
+
+
+
+        # DIBUJAR BORDE DE SELECCIÓN
+        if carta_seleccionada and seleccion_visible:
+            pygame.draw.rect(pantalla, (255, 0, 0), seleccion_visible, 3)
+
         pygame.display.flip()
 
-        # Condición de victoria
+        # VICTORIA
         if sum(len(f) for f in fundaciones) == 40:
             mostrar_mensaje_ganaste_y_guardar_ranking(movimientos)
             corriendo = False
@@ -177,11 +246,138 @@ def loop_juego():
                     toggle_musica()
                     continue
 
-                # Seleccionar grupo de cartas desde una pila
+                if BOTON_VOLVER_RECT.collidepoint(pos):
+                    corriendo = False  # sale del juego y vuelve al menú
+                    continue
+
+                if BOTON_SIGUIENTE_RECT.collidepoint(pos):
+                    if len(mazo) > 0:
+                        indice_mazo += 1
+                        if indice_mazo >= len(mazo):
+                            indice_mazo = 0
+                    continue  # para que no siga procesando otros clics ese frame
+
+                # Seleccionar carta del mazo
+                if carta_visible:
+                    rect_mazo = pygame.Rect(50, 20, 80, 120)
+                    if rect_mazo.collidepoint(pos):
+                        carta_seleccionada = {
+                            "origen": "mazo",
+                            "carta": carta_visible,
+                        }
+                        seleccion_visible = rect_mazo
+                        continue
+
+                # Clic en el mazo
+                if MAZO_RECT.collidepoint(pos):
+                    if len(mazo) == 0:
+                        continue
+                    carta, nuevo_indice = siguiente_carta(mazo, indice_mazo)
+
+                    se_movio = False
+                    if mover_a_fundacion(carta, fundaciones, PALOS):
+                        movimientos += 1
+                        se_movio = True
+                    elif mover_a_pila_en_indice(carta, pilas) or mover_a_pila_vacia(carta, pilas):
+                        movimientos += 1
+                        se_movio = True
+
+                    if se_movio:
+                        mazo.pop(indice_mazo)
+                    else:
+                        indice_mazo = nuevo_indice
+                    continue
+
+                # Si ya hay una selección activa
+                    # Intentar mover a fundación
+                    # Intentar mover a fundación
+                if carta_seleccionada:
+                    carta = carta_seleccionada["carta"]
+
+                    for i, rect in enumerate(FUNDACION_RECTS):
+                        if rect.collidepoint(pos):
+                            if mover_a_fundacion(carta, fundaciones, PALOS):
+                                movimientos += 1
+
+                                if carta_seleccionada is not None and carta_seleccionada["origen"] == "pila":
+                                    indice = carta_seleccionada["indice"]
+                                    ocultas, visibles = pilas[indice]
+                                    if carta in visibles:
+                                        visibles.remove(carta)
+                                    if not visibles and ocultas:
+                                        nueva_visible = ocultas.pop()
+                                        pilas[indice] = (ocultas, [nueva_visible])
+
+                                elif carta_seleccionada["origen"] == "mazo":
+                                    mazo.pop(indice_mazo)
+                                    carta_visible = None
+
+                                carta_seleccionada = None
+                                seleccion_visible = None
+                            break
+                                                # Si la carta seleccionada viene del mazo, intentar mover a pilas
+                        if carta_seleccionada is not None and carta_seleccionada["origen"] == "mazo":
+                            for i, (ocultas, visibles) in enumerate(pilas):
+                                x = ORIGEN_X + i * ESPACIADO_X
+                                y = ORIGEN_Y
+                                if visibles:
+                                    y += len(ocultas) * ESPACIADO_Y + len(visibles) * ESPACIADO_Y
+                                else:
+                                    y += len(ocultas) * ESPACIADO_Y
+
+                                rect = pygame.Rect(x, y, 80, 120)
+
+                                if rect.collidepoint(pos):
+                                    #  Esta es la corrección importante: pasar solo la pila específica
+                                    if mover_a_pila_en_indice(carta_seleccionada["carta"], pilas[i]):
+                                        movimientos += 1
+                                        mazo.pop(indice_mazo)
+                                        if indice_mazo >= len(mazo):
+                                            indice_mazo = 0
+                                        carta_seleccionada = None
+                                        seleccion_visible = None
+                                    break
+
+
+                    # Intentar mover a otra pila
+                    if carta_seleccionada is not None and carta_seleccionada["origen"] == "pila":
+                        # Código para mover cartas entre pilas:
+                        origen = carta_seleccionada["indice"]
+                        # ... seguir con lógica de mover de una pila a otra
+                        carta = carta_seleccionada["carta"]
+                        carta_idx = pilas[origen][1].index(carta)
+
+                        for i, (ocultas, visibles) in enumerate(pilas):
+                            x = ORIGEN_X + i * ESPACIADO_X
+                            if visibles:
+                                y = ORIGEN_Y + len(ocultas) * ESPACIADO_Y + len(visibles) * ESPACIADO_Y
+                            else:
+                                y = ORIGEN_Y  # Si está vacía, el rect va más arriba
+
+                            rect = pygame.Rect(x, y, 80, 120)
+
+                            if rect.collidepoint(pos):
+                                if mover_grupo_de_pila_a_pila(pilas, origen, carta_idx, i):
+                                    movimientos += 1
+                                break
+
+
+                        if rect.collidepoint(pos):
+                            if mover_grupo_de_pila_a_pila(pilas, origen, carta_idx, i):
+                                movimientos += 1
+                            carta_seleccionada = None
+                            seleccion_visible = None
+                            break  # salimos del evento
+
+                    # Si no hizo ningún movimiento, deseleccionamos
+                    carta_seleccionada = None
+                    seleccion_visible = None
+                    break  # clic vacío cancela
+
+                # Si no había selección activa: detectar selección nueva
                 for i, (ocultas, visibles) in enumerate(pilas):
                     x = ORIGEN_X + i * ESPACIADO_X
                     y = ORIGEN_Y + len(ocultas) * ESPACIADO_Y
-
                     for j, carta in enumerate(visibles):
                         rect = pygame.Rect(x, y + j * ESPACIADO_Y, 80, 120)
                         if rect.collidepoint(pos):
@@ -191,72 +387,10 @@ def loop_juego():
                                 "carta": carta,
                                 "grupo": visibles[j:]
                             }
-                            break
-
-                # Mover grupo a otra pila
-                if carta_seleccionada and carta_seleccionada["origen"] == "pila":
-                    for i, (ocultas, visibles) in enumerate(pilas):
-                        x = ORIGEN_X + i * ESPACIADO_X
-                        y = ORIGEN_Y + (len(ocultas) + len(visibles)) * ESPACIADO_Y
-                        rect = pygame.Rect(x, y, 80, 120)
-
-                        if rect.collidepoint(pos):
-                            grupo = carta_seleccionada["grupo"]
-                            carta = grupo[0]
-
-                            if mover_a_pila(carta, pilas) or mover_a_pila_vacia(carta, pilas):
-                                movimientos += 1
-                                origen = carta_seleccionada["indice"]
-                                _, visibles_origen = pilas[origen]
-
-                                for c in grupo:
-                                    if c in visibles_origen:
-                                        visibles_origen.remove(c)
-
-                                if not visibles_origen and pilas[origen][0]:
-                                    nueva_visible = pilas[origen][0].pop()
-                                    pilas[origen] = (pilas[origen][0], [nueva_visible])
-
-                            carta_seleccionada = None
-
-                # Mover carta seleccionada a fundación
-                if carta_seleccionada:
-                    for i, rect in enumerate(FUNDACION_RECTS):
-                        if rect.collidepoint(pos):
-                            carta = carta_seleccionada["carta"]
-
-                            if mover_a_fundacion(carta, fundaciones):
-                                movimientos += 1
-                                if carta_seleccionada["origen"] == "pila":
-                                    indice = carta_seleccionada["indice"]
-                                    ocultas, visibles = pilas[indice]
-
-                                    if carta in visibles:
-                                        visibles.remove(carta)
-
-                                    if not visibles and ocultas:
-                                        nueva_visible = ocultas.pop()
-                                        pilas[indice] = (ocultas, [nueva_visible])
-
-                                carta_seleccionada = None
-                                break
-
-                # Clic en el mazo
-                if MAZO_RECT.collidepoint(pos):
-                    if len(mazo) == 0:
-                        continue
-
-                    carta, nuevo_indice = siguiente_carta(mazo, indice_mazo)
-
-                    se_movio = False
-                    if mover_a_fundacion(carta, fundaciones):
-                        movimientos += 1
-                        se_movio = True
-                    elif mover_a_pila(carta, pilas) or mover_a_pila_vacia(carta, pilas):
-                        movimientos += 1
-                        se_movio = True
-
-                    if se_movio:
-                        mazo.pop(indice_mazo)
-                    else:
-                        indice_mazo = nuevo_indice
+                            seleccion_visible = pygame.Rect(
+                                x,
+                                y + j * ESPACIADO_Y,
+                                80,
+                                120 + ESPACIADO_Y * (len(visibles[j:]) - 1)
+                            )
+                            break  # salimos del evento al seleccionar

@@ -1,7 +1,7 @@
 from .constantes import *
 import random
 
-def crear_baraja():
+def crear_baraja(palos, valores):
     """
     Genera una baraja española de 40 cartas (sin 8 ni 9).
     
@@ -12,8 +12,8 @@ def crear_baraja():
         list: Lista de 40 tuplas representando las cartas.
     """
     baraja = []
-    for palo in PALOS:
-        for valor in VALORES:
+    for palo in palos:
+        for valor in valores:
             carta = (valor, palo)
             baraja.append(carta)
     return baraja
@@ -28,9 +28,8 @@ def barajar_baraja(baraja):
     Returns:
         list: Nueva lista de cartas mezcladas.
     """
-    nueva_baraja = baraja.copy()
-    random.shuffle(nueva_baraja)
-    return nueva_baraja
+    random.shuffle(baraja)
+    return baraja
 
 def repartir_cartas(baraja):
     """
@@ -48,12 +47,17 @@ def repartir_cartas(baraja):
     pilas = []
     indice = 0
 
-    for i in range(1, 8):  # 1 a 7 inclusive
+    for i in range(1, 8):
         cartas_pila = baraja[indice:indice + i]
-        ocultas = cartas_pila[:-1]     # todas menos la última
-        visibles = [cartas_pila[-1]]   # la última carta
+
+        if not cartas_pila:
+            break  # ⚠️ cortamos el reparto si no hay más cartas
+
+        ocultas = cartas_pila[:-1]
+        visibles = [cartas_pila[-1]]
         pilas.append((ocultas, visibles))
         indice += i
+
 
     mazo_reserva = baraja[indice:]  # lo que quedó sin repartir
     return pilas, mazo_reserva
@@ -74,7 +78,7 @@ def siguiente_carta(mazo, indice):
 
 
 
-def mover_a_fundacion(carta, fundaciones):
+def mover_a_fundacion(carta, fundaciones, palos):
     """
     Intenta mover una carta a su fundación correspondiente.
     Cada palo tiene su propia fundación (según el orden definido en PALOS).
@@ -90,43 +94,77 @@ def mover_a_fundacion(carta, fundaciones):
     Devuelve:
         True si se movió con éxito, False si no se pudo
     """
-    from .constantes import PALOS
 
-    if carta is None:
-        return False
+    bandera = False
+    if carta == None:
+        bandera = False
 
     valor, palo = carta
 
     # Verificar que el palo esté en la lista de fundaciones
-    if palo not in PALOS:
-        return False
+    if palo not in palos:
+        bandera = False
 
-    indice = PALOS.index(palo)
+    indice = palos.index(palo)
     fundacion = fundaciones[indice]
 
     if not fundacion:
         if valor == 1:
             fundacion.append(carta)
-            return True
+            bandera = True
     else:
         ultimo_valor, _ = fundacion[-1]
         if valor == ultimo_valor + 1:
             fundacion.append(carta)
-            return True
+            bandera = True
 
-    return False
+    return bandera
 
-def mover_a_pila(carta, pilas):
-    """
-    Intenta mover una carta a alguna de las 7 pilas.
+# def mover_a_pila(carta, pilas):
+#     """
+#     Intenta mover una carta a alguna de las 7 pilas.
     
+#     Reglas:
+#     - Si la pila está vacía: solo acepta un 12 (rey)
+#     - Si la pila tiene cartas: acepta solo cartas de valor -1 y de palo distinto al tope
+
+#     Args:
+#         carta (tuple): (valor, palo) a mover.
+#         pilas (list): Lista de 7 pilas, donde cada pila es (ocultas, visibles).
+
+#     Returns:
+#         bool: True si se pudo mover, False en caso contrario.
+#     """
+#     if carta is None:
+#         return False
+
+#     valor, palo = carta
+
+#     for i in range(len(pilas)):
+#         ocultas, visibles = pilas[i]
+
+#         if not visibles:  # Pila vacía
+#             if valor == 12:
+#                 pilas[i] = (ocultas, [carta])
+#                 return True
+#         else:
+#             tope_valor, tope_palo = visibles[-1]
+#             if valor == tope_valor - 1 and palo != tope_palo:
+#                 visibles.append(carta)
+#                 return True
+
+#     return False
+def mover_a_pila_en_indice(carta, pila):
+    """
+    Intenta mover una carta a una pila específica.
+
     Reglas:
     - Si la pila está vacía: solo acepta un 12 (rey)
     - Si la pila tiene cartas: acepta solo cartas de valor -1 y de palo distinto al tope
 
     Args:
-        carta (tuple): (valor, palo) a mover.
-        pilas (list): Lista de 7 pilas, donde cada pila es (ocultas, visibles).
+        carta (tuple): (valor, palo)
+        pila (tuple): (ocultas, visibles)
 
     Returns:
         bool: True si se pudo mover, False en caso contrario.
@@ -135,21 +173,20 @@ def mover_a_pila(carta, pilas):
         return False
 
     valor, palo = carta
+    ocultas, visibles = pila
 
-    for i in range(len(pilas)):
-        ocultas, visibles = pilas[i]
-
-        if not visibles:  # Pila vacía
-            if valor == 12:
-                pilas[i] = (ocultas, [carta])
-                return True
-        else:
-            tope_valor, tope_palo = visibles[-1]
-            if valor == tope_valor - 1 and palo != tope_palo:
-                visibles.append(carta)
-                return True
+    if not visibles:  # Pila vacía
+        if valor == 10:
+            visibles.append(carta)
+            return True
+    else:
+        tope_valor, tope_palo = visibles[-1]
+        if valor == tope_valor - 1 and palo != tope_palo:
+            visibles.append(carta)
+            return True
 
     return False
+
 def mover_a_pila_vacia(carta, pilas):
     """
     Intenta mover una carta a una pila vacía.
@@ -167,7 +204,7 @@ def mover_a_pila_vacia(carta, pilas):
 
     valor, _ = carta
 
-    if valor != 12:
+    if valor != 10:
         return False
 
     for i in range(len(pilas)):

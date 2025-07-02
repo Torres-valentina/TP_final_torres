@@ -42,7 +42,7 @@ def obtener_estado_ranking():
     """
     ranking = cargar_ranking()
     if not ranking:
-        return ["El ranking está vacío. ¡Sé el primero en jugar y ganar!"]
+        estado = ["El ranking está vacío. ¡Sé el primero en jugar y ganar!"]
     estado = ["Nombre         | Movimientos", "---------------|-------------"]
     for nombre, puntos in ranking:
         estado.append(f"{nombre:<14} | {puntos:<11}")

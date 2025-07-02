@@ -15,5 +15,5 @@ ESPACIADO_Y = 30
 ORIGEN_X = 100
 ORIGEN_Y = 170
 
-FUNDACION_X = 200  # Posición horizontal de la primera fundación
+FUNDACION_X = 250  # Posición horizontal de la primera fundación
 FUNDACION_Y = 20   # Posición vertical de las fundaciones

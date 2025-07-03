@@ -5,3 +5,4 @@ tomas,10
 martina,10
 maria,70
 Jose,66
+sofia,73

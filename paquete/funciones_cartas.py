@@ -120,40 +120,6 @@ def mover_a_fundacion(carta, fundaciones, palos):
 
     return bandera
 
-# def mover_a_pila(carta, pilas):
-#     """
-#     Intenta mover una carta a alguna de las 7 pilas.
-    
-#     Reglas:
-#     - Si la pila está vacía: solo acepta un 12 (rey)
-#     - Si la pila tiene cartas: acepta solo cartas de valor -1 y de palo distinto al tope
-
-#     Args:
-#         carta (tuple): (valor, palo) a mover.
-#         pilas (list): Lista de 7 pilas, donde cada pila es (ocultas, visibles).
-
-#     Returns:
-#         bool: True si se pudo mover, False en caso contrario.
-#     """
-#     if carta is None:
-#         return False
-
-#     valor, palo = carta
-
-#     for i in range(len(pilas)):
-#         ocultas, visibles = pilas[i]
-
-#         if not visibles:  # Pila vacía
-#             if valor == 12:
-#                 pilas[i] = (ocultas, [carta])
-#                 return True
-#         else:
-#             tope_valor, tope_palo = visibles[-1]
-#             if valor == tope_valor - 1 and palo != tope_palo:
-#                 visibles.append(carta)
-#                 return True
-
-#     return False
 def mover_a_pila_en_indice(carta, pila):
     """
     Intenta mover una carta a una pila específica.
@@ -214,3 +180,33 @@ def mover_a_pila_vacia(carta, pilas):
             return True
 
     return False
+def mover_grupo_de_pila_a_pila(pilas, origen_idx, carta_idx, destino_idx):
+    ocultas_origen, visibles_origen = pilas[origen_idx]
+    cartas_a_mover = visibles_origen[carta_idx:]
+
+    if not cartas_a_mover:
+        return False
+
+    valor_mover, palo_mover = cartas_a_mover[0]
+    ocultas_destino, visibles_destino = pilas[destino_idx]
+
+    if not visibles_destino:
+        if valor_mover != 10:
+            return False
+        else:
+            pilas[destino_idx] = (ocultas_destino, visibles_destino + cartas_a_mover)
+            pilas[origen_idx] = (ocultas_origen, visibles_origen[:carta_idx])
+    else:
+        valor_tope, palo_tope = visibles_destino[-1]
+
+        if valor_mover == valor_tope - 1 and palo_mover != palo_tope:
+            pilas[destino_idx] = (ocultas_destino, visibles_destino + cartas_a_mover)
+            pilas[origen_idx] = (ocultas_origen, visibles_origen[:carta_idx])
+        else:
+            return False
+
+    if not pilas[origen_idx][1] and pilas[origen_idx][0]:
+        nueva_visible = pilas[origen_idx][0].pop()
+        pilas[origen_idx] = (pilas[origen_idx][0], [nueva_visible])
+
+    return True

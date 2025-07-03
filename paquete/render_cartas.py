@@ -102,4 +102,3 @@ def dibujar_pilas_con_imagenes(pantalla, pilas, carta_mazo=None, fundaciones=Non
         pantalla.blit(imagen, (50, 20))
     else:
         pantalla.blit(REVERSO, (50, 20))
-

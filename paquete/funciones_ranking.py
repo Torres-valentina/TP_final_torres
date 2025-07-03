@@ -35,18 +35,6 @@ def guardar_ranking(nombre, puntaje):
     with open(ARCHIVO_RANKING, "a", encoding="utf-8") as archivo:
         archivo.write(f"{nombre},{puntaje}\n")
 
-
-# def obtener_estado_ranking():
-#     """
-#     Devuelve una lista de líneas formateadas para mostrar el ranking en pantalla.
-#     """
-#     ranking = cargar_ranking()
-#     if not ranking:
-#         estado = ["El ranking está vacío. ¡Sé el primero en jugar y ganar!"]
-#     estado = ["Nombre         | Movimientos", "---------------|-------------"]
-#     for nombre, puntos in ranking:
-#         estado.append(f"{nombre:<14} | {puntos:<11}")
-#     return estado
 def obtener_estado_ranking():
     """
     Devuelve una lista de líneas formateadas para mostrar el ranking en pantalla,

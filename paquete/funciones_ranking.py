@@ -36,13 +36,29 @@ def guardar_ranking(nombre, puntaje):
         archivo.write(f"{nombre},{puntaje}\n")
 
 
+# def obtener_estado_ranking():
+#     """
+#     Devuelve una lista de líneas formateadas para mostrar el ranking en pantalla.
+#     """
+#     ranking = cargar_ranking()
+#     if not ranking:
+#         estado = ["El ranking está vacío. ¡Sé el primero en jugar y ganar!"]
+#     estado = ["Nombre         | Movimientos", "---------------|-------------"]
+#     for nombre, puntos in ranking:
+#         estado.append(f"{nombre:<14} | {puntos:<11}")
+#     return estado
 def obtener_estado_ranking():
     """
-    Devuelve una lista de líneas formateadas para mostrar el ranking en pantalla.
+    Devuelve una lista de líneas formateadas para mostrar el ranking en pantalla,
+    ordenado de menor a mayor cantidad de movimientos.
     """
     ranking = cargar_ranking()
     if not ranking:
-        estado = ["El ranking está vacío. ¡Sé el primero en jugar y ganar!"]
+        return ["El ranking está vacío. ¡Sé el primero en jugar y ganar!"]
+
+    # Ordenar por cantidad de movimientos (puntaje)
+    ranking.sort(key=lambda x: x[1])
+
     estado = ["Nombre         | Movimientos", "---------------|-------------"]
     for nombre, puntos in ranking:
         estado.append(f"{nombre:<14} | {puntos:<11}")

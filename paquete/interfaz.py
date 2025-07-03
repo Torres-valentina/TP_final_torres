@@ -85,32 +85,42 @@ def mostrar_textos(lista_textos):
         y += 30
     pantalla.blit(imagen_boton_volver, BOTON_VOLVER_RECT)
 
-
 def mostrar_mensaje_ganaste_y_guardar_ranking(movimientos):
     pantalla.fill(NEGRO)
-    texto = fuente.render("¡Ganaste!", True, BLANCO)
-    pantalla.blit(texto, (ANCHO // 2 - texto.get_width() // 2, ALTO // 2 - 40))
-    texto2 = fuente.render(f"Movimientos: {movimientos}", True, BLANCO)
-    pantalla.blit(texto2, (ANCHO // 2 - texto2.get_width() // 2, ALTO // 2))
-    texto3 = fuente.render("Escribí tu nombre en la consola...", True, BLANCO)
-    pantalla.blit(texto3, (ANCHO // 2 - texto3.get_width() // 2, ALTO // 2 + 40))
-    pygame.display.flip()
+    texto_ganaste = fuente.render("¡Ganaste! 🎉", True, BLANCO)
+    texto_movs = fuente.render(f"Movimientos: {movimientos}", True, BLANCO)
+    texto_ingresa = fuente.render("Ingresá tu nombre:", True, BLANCO)
 
-    print("\n¡Ganaste! 🎉")
-    print(f"Movimientos: {movimientos}")
-    nombre = input("Ingresá tu nombre para el ranking: ")
+    nombre = ""
+    ingresando = True
 
-    from .funciones_ranking import guardar_ranking
-    guardar_ranking(nombre, movimientos)
+    while ingresando:
+        pantalla.fill(NEGRO)
+        pantalla.blit(texto_ganaste, (ANCHO // 2 - texto_ganaste.get_width() // 2, 100))
+        pantalla.blit(texto_movs, (ANCHO // 2 - texto_movs.get_width() // 2, 150))
+        pantalla.blit(texto_ingresa, (ANCHO // 2 - texto_ingresa.get_width() // 2, 200))
 
-    esperando = True
-    while esperando:
+        input_render = fuente.render(nombre + "|", True, BLANCO)
+        pantalla.blit(input_render, (ANCHO // 2 - input_render.get_width() // 2, 250))
+
+        pygame.display.flip()
+
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            elif evento.type in [pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN]:
-                esperando = False
+            elif evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_RETURN:
+                    if nombre.strip():
+                        from .funciones_ranking import guardar_ranking
+                        guardar_ranking(nombre.strip(), movimientos)
+                        ingresando = False
+                elif evento.key == pygame.K_BACKSPACE:
+                    nombre = nombre[:-1]
+                else:
+                    if len(nombre) < 20:
+                        nombre += evento.unicode
+
 
 def loop_menu():
     botones = mostrar_menu()

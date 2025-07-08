@@ -19,8 +19,10 @@ ALTO = 600
 TAM_CARTA = (80, 120)
 ESPACIADO_X = 100
 ESPACIADO_Y = 30
+#----------------CORDENADAS PILAS ---------------------------
 ORIGEN_X = 100
 ORIGEN_Y = 170
+
+#----------------CORDENADAS FUNDACIONES-------------------------------
 FUNDACION_X = 250
 FUNDACION_Y = 20
-

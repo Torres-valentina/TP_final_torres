@@ -11,13 +11,12 @@ def cargar_ranking():
     with open(ARCHIVO_RANKING, "r", encoding="utf-8") as archivos:
         for linea in archivos:
             linea = linea.strip()
-            valores = linea.split(",") # Divide por coma
+            valores = linea.split(",") 
             if len(valores) == 2: # Asegurarse de que haya nombre y puntuación
                 nombre = valores[0]
-                # asegurar que la puntuación sea un número
                 if valores[1].isdigit():
                     puntuacion = int(valores[1])
-                    ranking.append((nombre, puntuacion)) # Añadir como tupla
+                    ranking.append((nombre, puntuacion)) 
                 else:
                     print(f" Puntuación inválida '{valores[1]}' en ranking. Se omite la entrada.")
             else:
@@ -41,9 +40,6 @@ def obtener_estado_ranking():
     ordenado de menor a mayor cantidad de movimientos.
     """
     ranking = cargar_ranking()
-    if not ranking:
-        return ["El ranking está vacío. ¡Sé el primero en jugar y ganar!"]
-
     # Ordenar por cantidad de movimientos (puntaje)
     ranking.sort(key=lambda x: x[1])
 

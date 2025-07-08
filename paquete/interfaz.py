@@ -1,7 +1,7 @@
 import pygame
 import sys
 from .constantes import BLANCO, AZUL, NEGRO
-from .funciones_ranking import guardar_ranking  
+from .funciones_ranking import guardar_ranking
 
 def toggle_musica(musica_activada, icono_sonido, icono_silencio):
     if musica_activada:

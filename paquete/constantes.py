@@ -77,5 +77,5 @@ for i in range(4):
 
 # Ajusto el archivo `constantes.py` para incluir estos rectángulos fijos:
 
-BOTON_SIGUIENTE_RECT = pygame.Rect(ANCHO - 90, ALTO - 90, 80, 80) # Posición arbitraria basada en el render
+BOTON_SIGUIENTE_RECT = pygame.Rect(150, 40, 80, 80) # Posición arbitraria basada en el render
 BOTON_VOLVER_RECT = pygame.Rect(10, ALTO - 80, 80, 80) # De cargar_boton_volver

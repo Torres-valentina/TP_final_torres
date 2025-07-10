@@ -4,6 +4,10 @@ from paquete.constantes import *
 def inicializar_reverso():
     """
     Carga y escala la imagen del reverso de las cartas.
+    
+    Returns:
+        pygame.Surface: Imagen escalada del reverso.
+
     """
     reverso = pygame.image.load("cartas/reverso.jpg")
     if pygame.display.get_surface():
@@ -68,7 +72,7 @@ def dibujar_fundaciones(pantalla, fundaciones, imagenes_cache):
             imagen = cargar_imagen(valor, palo, imagenes_cache)
             pantalla.blit(imagen, (x, y))
         else:
-            pygame.draw.rect(pantalla, (255, 255, 255), (x, y, *TAM_CARTA), 2)
+            pygame.draw.rect(pantalla, BLANCO, (x, y, *TAM_CARTA), 2)
 
 def dibujar_pilas_con_imagenes(pantalla, pilas, reverso, imagenes_cache, carta_mazo, fundaciones):
     """
@@ -101,7 +105,7 @@ def dibujar_pilas_con_imagenes(pantalla, pilas, reverso, imagenes_cache, carta_m
             y += ESPACIADO_Y
 
         if not ocultas and not visibles:
-            pygame.draw.rect(pantalla, (100, 100, 100), (x, y, *TAM_CARTA), 2)
+            pygame.draw.rect(pantalla, GRIS, (x, y, *TAM_CARTA), 2)
 
     if carta_mazo:
         valor, palo = carta_mazo
@@ -126,6 +130,6 @@ def dibujar_escena_juego(pantalla, pilas, carta_visible, fundaciones,
     pantalla.blit(imagen_boton_volver, BOTON_VOLVER_RECT)
 
     if carta_seleccionada and seleccion_visible:
-        pygame.draw.rect(pantalla, (255, 0, 0), seleccion_visible, 3)
+        pygame.draw.rect(pantalla, ROJO, seleccion_visible, 3)
 
     pygame.display.flip()

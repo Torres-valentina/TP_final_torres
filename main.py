@@ -1,7 +1,7 @@
 import pygame
 import sys
 from paquete.constantes import ANCHO, ALTO, PALOS, VALORES, BOTON_VOLVER_RECT
-from paquete.variables_pygame import cargar_iconos_sonido, cargar_boton_volver, cargar_boton_siguiente
+from paquete.carga import *
 from paquete.render_cartas import inicializar_reverso, cargar_imagenes_cartas
 from paquete.interfaz import mostrar_menu, toggle_musica, mostrar_textos
 from paquete.funciones_ranking import obtener_estado_ranking
@@ -18,10 +18,12 @@ pantalla = pygame.display.set_mode((ANCHO, ALTO))
 pygame.display.set_caption("Solitario")
 pygame.display.set_icon(pygame.image.load("imagenes/icono.png"))
 
+#--------------MUSICA-----------------------
 pygame.mixer.music.load("sonidos/musica_fondo.mp3")
 pygame.mixer.music.set_volume(0.5)
 pygame.mixer.music.play(-1)
 
+#fuente, tipo y tamaño de la letra
 fuente = pygame.font.SysFont("consolas", 24)
 
 # --- Recursos visuales (botones e iconos) ---
@@ -91,9 +93,3 @@ while True:
                 elif botones_menu["salir"].collidepoint(evento.pos):
                     pygame.quit()
                     sys.exit()
-
-        # Si no se ha salido del bucle interior, seguir en el menú
-        if menu_activo:
-            # Aquí podrías tener alguna actualización continua del menú si la hubiera,
-            # pero para un menú estático, solo se necesita el manejo de eventos.
-            pass

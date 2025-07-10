@@ -1,3 +1,4 @@
 abril,88
 agus,69
 martina,70
+juan,75

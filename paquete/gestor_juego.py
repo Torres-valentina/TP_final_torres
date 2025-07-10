@@ -318,7 +318,7 @@ def _manejar_eventos_juego(estado_juego):
 def ejecutar_bucle_juego(pantalla, fuente, reverso, imagenes_cartas,
                          icono_sonido, icono_silencio, boton_sonido_rect,
                          imagen_boton_volver, imagen_boton_siguiente,
-                         musica_activada_inicial, icono_actual_inicial): # <-- NUEVOS PARÁMETROS RECIBIDOS
+                         musica_activada_inicial, icono_actual_inicial): 
     """
     Contiene el bucle principal del juego.
     """
